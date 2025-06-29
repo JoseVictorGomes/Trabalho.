@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendamento</title>
+  <link rel="stylesheet" href="style.css" >
+</head>
+<body>
+  <header>
+    <h1><strong>BARBEARIA DOIS IRMÃOS</strong></h1>
+    <div class="header-botoes">
+      <button class="meus-agendamentos-btn" onclick="abrirMeusAgendamentosPopup()">Meus Agendamentos</button>
+      <button class="seja-barbeiro-btn" onclick="abrirCandidaturaBarbeiroPopup()">Seja um Barbeiro</button>
+    </div>
+  </header>
+
+  <div class="popup" id="popupMeusAgendamentos"> <button class="fechar-btn" onclick="fecharTodosPopups()">&times;</button> <h2>Consultar Agendamento</h2>
+    <label for="whatsapp">Digite seu número de WhatsApp:</label>
+    <input type="text" id="whatsapp" >
+    <button onclick="consultarAgendamentos()">Consultar</button>
+    <div id="resultadoConsulta"></div>
+  </div>
+
+  <div class="popup" id="popupCandidaturaBarbeiro"> <button class="fechar-btn" onclick="fecharTodosPopups()">&times;</button> <h2>Candidatura para Barbeiro</h2>
+    <label for="nomeBarbeiro">Nome Completo:</label> <input type="text" id="nomeBarbeiro" required>
+
+    <label for="telefoneBarbeiro">Telefone (WhatsApp):</label> <input type="text" id="telefoneBarbeiro" required>
+
+    <label for="enderecoBarbeiro">Endereço:</label> <input type="text" id="enderecoBarbeiro" required>
+
+    <label for="curriculoBarbeiro">Link para Currículo:</label> <input type="url" id="curriculoBarbeiro" placeholder="Ex: https://drive.google.com/seu-curriculo.pdf">
+
+    <button onclick="enviarCandidaturaBarbeiro()">Enviar Candidatura</button> <div id="mensagemBarbeiro" class="mensagem"></div> </div>
+
+  <div class="container">
+    <form id="formularioAgendamento"> <h2>Agende seu horário</h2>
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" required>
+
+      <label for="whats">WhatsApp:</label>
+      <input type="text" id="whats" required>
+
+      <label for="hora">Escolha um horário disponível:</label>
+      <select id="hora" required>
+        <option value="">Selecione...</option>
+      </select>
+
+      <label for="barbeiro">Escolha seu barbeiro:</label>
+      <select id="barbeiro" required>
+        <option value="">Selecione...</option>
+        <option value="Geraldo">Geraldo</option>
+        <option value="Osvaldo">Osvaldo</option>
+      </select>
+
+      <button type="submit">Agendar</button>
+      <div class="mensagem" id="mensagem"></div>
+    </form>
+
+    <div class="horarios">
+      <h2>Horários disponíveis </h2>
+      <ul id="listaHorarios"></ul>
+    </div>
+  </div>
+
+  <script>
+    const horariosDisponiveis = [ 
+      "08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
+    ];
+    const listaHorarios = document.getElementById("listaHorarios");
+    const selectHora = document.getElementById("hora");
+    const selectBarbeiro = document.getElementById("barbeiro");
+    const formularioAgendamento = document.getElementById("formularioAgendamento"); 
+    const mensagem = document.getElementById("mensagem");
+    const popupMeusAgendamentos = document.getElementById("popupMeusAgendamentos"); 
+    const popupCandidaturaBarbeiro = document.getElementById("popupCandidaturaBarbeiro"); 
+    const resultadoConsulta = document.getElementById("resultadoConsulta");
+    const mensagemBarbeiro = document.getElementById("mensagemBarbeiro"); 
+
+    function atualizarHorariosDisponiveis() {
+      listaHorarios.innerHTML = "";
+      selectHora.innerHTML = '<option value="">Selecione...</option>';
+
+      const agendamentosPorBarbeiro = {};
+      horariosDisponiveis.forEach(hora => { 
+        agendamentosPorBarbeiro[hora] = {}; 
+        ['Geraldo', 'Osvaldo'].forEach(barbeiro => {
+          const key = `${hora}-${barbeiro}`; 
+          let dados = null;
+          try {
+            const item = localStorage.getItem(key);
+            dados = item ? JSON.parse(item) : null;
+          } catch (e) {
+            console.error("Erro ao ler localStorage:", e);
+          }
+          agendamentosPorBarbeiro[hora][barbeiro] = dados;
+        });
+      });
+
+      horariosDisponiveis.forEach(hora => { 
+        const li = document.createElement("li");
+        let textoHora = `${hora}: `;
+        let todosOcupados = true;
+
+        ['Geraldo', 'Osvaldo'].forEach(barbeiro => {
+          const dados = agendamentosPorBarbeiro[hora][barbeiro];
+          if (dados) {
+            textoHora += ` ${barbeiro} (Reservado) `;
+          } else {
+            textoHora += ` ${barbeiro} (Disponível) `;
+            todosOcupados = false;
+          }
+        });
+
+        li.textContent = textoHora.trim();
+        if (todosOcupados) {
+          li.classList.add("reservado");
+        }
+        listaHorarios.appendChild(li);
+
+        if (!todosOcupados) {
+          const option = document.createElement("option");
+          option.value = hora;
+          option.textContent = hora;
+          selectHora.appendChild(option);
+        }
+      });
+    }
+
+    formularioAgendamento.addEventListener("submit", function(event) { 
+      event.preventDefault();
+      const nome = document.getElementById("nome").value;
+      const whats = document.getElementById("whats").value;
+      const hora = document.getElementById("hora").value;
+      const barbeiro = selectBarbeiro.value;
+
+      if (!hora || !nome || !whats || !barbeiro) {
+        mensagem.textContent = "Preencha todos os campos.";
+        return;
+      }
+
+      const key = `${hora}-${barbeiro}`;
+
+      if (localStorage.getItem(key)) {
+        mensagem.textContent = `O horário ${hora} com ${barbeiro} já está reservado. Escolha outro.`;
+        return;
+      }
+
+      localStorage.setItem(key, JSON.stringify({ nome, whats, barbeiro }));
+      mensagem.textContent = `Horário ${hora} com ${barbeiro} reservado para ${nome}`;
+      formularioAgendamento.reset(); 
+      atualizarHorariosDisponiveis();
+    });
+
+    function abrirMeusAgendamentosPopup() { 
+      fecharTodosPopups(); 
+      popupMeusAgendamentos.style.display = "block"; 
+      document.body.classList.add('popup-aberto'); 
+    }
+
+    function abrirCandidaturaBarbeiroPopup() { 
+      fecharTodosPopups(); 
+      popupCandidaturaBarbeiro.style.display = "block"; 
+      document.body.classList.add('popup-aberto'); 
+    }
+
+    function consultarAgendamentos() {
+      const numero = document.getElementById("whatsapp").value;
+      let encontrados = [];
+
+      horariosDisponiveis.forEach(hora => { 
+        ['Geraldo', 'Osvaldo'].forEach(barbeiro => {
+          const key = `${hora}-${barbeiro}`;
+          let dados = null;
+          try {
+            const item = localStorage.getItem(key);
+            dados = item ? JSON.parse(item) : null;
+          } catch (e) {
+            console.error("Erro ao ler localStorage:", e);
+          }
+
+          if (dados && dados.whats === numero) {
+            encontrados.push({
+              hora: hora,
+              barbeiro: barbeiro,
+              nome: dados.nome,
+              key: key 
+            });
+          }
+        });
+      });
+
+      resultadoConsulta.innerHTML = "";
+
+      if (encontrados.length > 0) {
+        const tituloConsulta = document.createElement("p");
+        tituloConsulta.textContent = "Agendamentos encontrados:";
+        resultadoConsulta.appendChild(tituloConsulta);
+
+        const ul = document.createElement("ul");
+        
+        encontrados.forEach(agendamento => {
+          const li = document.createElement("li");
+          li.textContent = `${agendamento.hora} - ${agendamento.nome} (Barbeiro: ${agendamento.barbeiro})`;
+
+          const btnCancelar = document.createElement("button");
+          btnCancelar.textContent = "Cancelar";
+          btnCancelar.classList.add("cancelar-btn"); 
+          btnCancelar.onclick = () => cancelarAgendamento(agendamento.key); 
+          
+          li.appendChild(btnCancelar);
+          ul.appendChild(li);
+        });
+        resultadoConsulta.appendChild(ul);
+      } else {
+        resultadoConsulta.innerHTML = "<p>Nenhum agendamento encontrado para esse número.</p>";
+      }
+    }
+
+    function cancelarAgendamento(key) {
+      if (confirm("Tem certeza que deseja cancelar este agendamento?")) {
+        localStorage.removeItem(key);
+        alert("Agendamento cancelado com sucesso!");
+        consultarAgendamentos();
+        atualizarHorariosDisponiveis();
+      }
+    }
+
+    function fecharTodosPopups() { 
+        popupMeusAgendamentos.style.display = "none"; 
+        popupCandidaturaBarbeiro.style.display = "none"; 
+        document.body.classList.remove('popup-aberto'); 
+    }
+
+    function enviarCandidaturaBarbeiro() { 
+      const nome = document.getElementById("nomeBarbeiro").value; 
+      const telefone = document.getElementById("telefoneBarbeiro").value; 
+      const endereco = document.getElementById("enderecoBarbeiro").value;
+      const curriculoLink = document.getElementById("curriculoBarbeiro").value; 
+
+      if (!nome || !telefone || !endereco) {
+        mensagemBarbeiro.textContent = "Por favor, preencha nome, telefone e endereço."; 
+        mensagemBarbeiro.style.color = "red";
+        return;
+      }
+     
+      document.getElementById("nomeBarbeiro").value = ""; 
+      document.getElementById("telefoneBarbeiro").value = ""; 
+      document.getElementById("enderecoBarbeiro").value = ""; 
+      document.getElementById("curriculoBarbeiro").value = ""; 
+    }
+
+    atualizarHorariosDisponiveis();
+  </script>
+</body>
+</html>

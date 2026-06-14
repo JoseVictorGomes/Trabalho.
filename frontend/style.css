@@ -4,20 +4,16 @@
       padding: 0;
       box-sizing: border-box;
     }
-    /* --- CONFIGURAÇÕES DO PAINEL DO DONO (ADICIONADO) --- */
 
-/* Deixa o botão do proprietário vermelho com destaque */
 .admin-btn {
     background-color: #d9534f !important;
     color: white !important;
 }
 
-/* Garante que a janela de gestão do dono tenha um tamanho confortável */
 #janelaDoDono {
     max-width: 600px;
 }
 
-/* Organiza o espaço interno das listas de agendamentos e currículos */
 #listaAged, #listaCand {
     max-height: 120px;
     overflow-y: auto;

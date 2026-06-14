@@ -16,7 +16,6 @@ let db;
     console.log("Banco de dados pronto!");
 })();
 
-// LOGIN DO DONO
 app.post('/dono/entrar', (req, res) => {
     const { usuario, senha } = req.body;
     if (usuario === "admin" && senha === "admin123") {
@@ -25,7 +24,6 @@ app.post('/dono/entrar', (req, res) => {
     res.status(401).json({ erro: "Usuário ou senha inválidos." });
 });
 
-// ROTAS DOS CLIENTES
 app.get('/horarios-ocupados', async (req, res) => {
     const lista = await db.all('SELECT hora, barbeiro FROM agendamentos');
     res.json(lista);
@@ -60,7 +58,6 @@ app.post('/candidatura-barbeiro', async (req, res) => {
     res.status(201).json({ mensagem: "Candidatura enviada!" });
 });
 
-// ROTAS DO DONO (PROTEGIDAS)
 app.get('/dono/todos-agendamentos', async (req, res) => {
     if (req.headers['authorization'] !== "passe-livre-2026") return res.status(403).json({ erro: "Bloqueado!" });
     res.json(await db.all('SELECT * FROM agendamentos ORDER BY hora ASC'));

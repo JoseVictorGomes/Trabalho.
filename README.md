@@ -23,3 +23,19 @@ Demonstração do que seria um pitch desse produto: Criamos um MVP de um site pa
 Para atender os requisitos do sistema, os arquivos foram organizados em subpastas:
 /frontend: Contém a interface do usuário Sistema.html e style.css
 /backend: Contém o servidor server.js e o banco de dados estruturado barbearia.db
+
+Como Executar o Projeto Localmente
+
+Como a pasta node_modules não é enviada para o repositório pelo tamanho dela, siga os passos abaixo para rodar o sistema na sua máquina:
+
+Instalar as Dependências
+Abra o terminal na raiz do projeto e instale a pasta node_modules necessária para o banco de dados rodar, digitando o comando: npm install
+
+Iniciar o Servidor (Back-End)
+Para ligar o banco de dados e o servidor do sistema para que os agendamentos apareçam e funcionem na tela, navegue até a pasta backend com cd backend e execute:
+node server.js
+
+Abrir o Sistema (Front-End)
+Com o servidor rodando e ativo no terminal, basta abrir o arquivo Sistema.html diretamente no seu navegador para realizar e visualizar os agendamentos
+
+

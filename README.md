@@ -12,11 +12,14 @@ Publico alvo: barbeiros e clientes.
 
 Dores: O MVP resolve três dores centrais, falta de organização e controle para o barbeiro, falta de praticidade e autonomia para o cliente, barreiras para crescer atraindo novos barbeiros ou clientes.
 
-Tecnologia utilizada: HTML, JAVA-SCRIPT, CSS.
+Tecnologias utilizadas: HTML, JavaScript, CSS, Node.js (Express) e SQLite (Banco de Dados).
 
 Ferramenta de prototipação: Corel.
 
-Informações adicionais: Trabalho foi feito com base em 30% aula de MVP e front-end, 60% aulas do youtube e 10% chat gpt.
+Informações adicionais: Trabalho foi feito com base em 30% aula de MVP e front-end, 40% aulas do youtube e 30% ultilizando ferramentas de IA.
 
-Demonstração do que seria um pitch desse produto:
-Criamos um MVP de um site para barbearias que permite que os clientes agendem seus horários online, sem precisar ligar ou mandar mensagem. Em poucos cliques o cliente escolhe o serviço, o hórario e o barbeiro disponível, simples, direto e sem precisar de app. O MVP já está funcionando com agendamento básico e visualização de hórarios. Agora buscamos feedback direto de barbeiros e clientes para evoluir. Nosso foco inicial são barbeiros de bairro com fluxo médio de clientes, oferecendo o serviço gratuito no início e com planos acessíveis no futuro.
+Demonstração do que seria um pitch desse produto: Criamos um MVP de um site para barbearias que permite que os clientes agendem seus horários online, sem precisar ligar ou mandar mensagem. Em poucos cliques o cliente escolhe o serviço, o hórario e o barbeiro disponível, simples, direto e sem precisar de app. O MVP já está funcionando com agendamento básico e visualização de hórarios. Agora buscamos feedback direto de barbeiros e clientes para evoluir. Nosso foco inicial são barbeiros de bairro com fluxo médio de clientes, oferecendo o serviço gratuito no início e com planos acessíveis no futuro.
+
+Para atender os requisitos do sistema, os arquivos foram organizados em subpastas:
+/frontend: Contém a interface do usuário Sistema.html e style.css
+/backend: Contém o servidor server.js e o banco de dados estruturado barbearia.db
